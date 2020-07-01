@@ -5,11 +5,12 @@ library(gtable) #表を描画
 library(gridExtra) #配置情報を含むデータに変換
 library(grid)
 
+#作業ディレクトリ
 setwd("~/Desktop/生野区/")
 
-#住民基本台帳csv読込
-data1 <- read.csv("./住基データ/jyuki_ikuno_201103.csv")
-data2 <- read.csv("./住基データ/jyuki_ikuno_202003.csv")
+#住民基本台帳csv読込　市HPから取得
+data1 <- read.csv("./jyuki_ikuno_201103.csv")
+data2 <- read.csv("./jyuki_ikuno_202003.csv")
 
 #男女別が「計」のデータだけ抽出
 total1 <- data1 %>% filter(data1$男女別=="計")
@@ -23,18 +24,7 @@ total2[is.na(total2)] <- 0
 last <- length(total1$町丁目名)-1 #最後が総数のため-1にして読み込まないようにする
 name <- total1[1:last,2]
 
-#x軸項目名を0歳~100歳で10歳刻みでベクトルとして作成しておく
-xLabNames = c("0","","","","","","","","","",
-             "10","","","","","","","","","",
-             "20","","","","","","","","","",
-             "30","","","","","","","","","",
-             "40","","","","","","","","","",
-             "50","","","","","","","","","",
-             "60","","","","","","","","","",
-             "70","","","","","","","","","",
-             "80","","","","","","","","","",
-             "90","","","","","","","","","","100")
-
+######################################################
 #10歳まとめで人数集計
 #0-9歳|10-19歳|...と10歳ごとの人数計を格納する1次元配列を0初期値で準備　100歳以上と総計を入れるから12個
 sum1 <- array(0, dim=c(1,12))
@@ -45,9 +35,10 @@ df <- data.frame(matrix(0, nrow=3, ncol=12))
 colnames(df) <- c("0-9歳","10-19歳","20-29歳","30-39歳","40-49歳","50-59歳","60-69歳","70-79歳","80-89歳","90-99歳","100歳","計")
 rownames(df) <- c("2011年3月末","2020年3月末","増減数")
 
+#以下は未使用　data frameが整数と%の２つの型を混合できない？
 #増減割合は%表示するので整数のdata frameと別に配列を作成
-percentage <- array(0, dim=c(1,12))
-rownames(percentage) <- c("増減割合")
+#percentage <- array(0, dim=c(1,12))
+#rownames(percentage) <- c("増減割合")
 
 #######################################################
 #町丁目ごとに、住基データをpngファイルに書き出し。あとでパワポに貼り付けて資料作成する
@@ -80,7 +71,7 @@ for(j in 1:last){
   g1 <- g1 + annotate("text", label="青：2011年3月末", size=4, x=80, y=75, family="HiraKakuProN-W3")
   g1 <- g1 + annotate("text", label="赤：2020年3月末", size=4, x=80, y=70, family="HiraKakuProN-W3")
   #2011年　棒グラフ
-  g1 <- g1 + geom_bar(data=q1, aes(x=年齢, y=人), stat="identity", color=NA, fill="dodgerblue", show.legend=T) + xlab("年齢") + ylab("人")
+  g1 <- g1 + geom_bar(data=q1, aes(x=年齢, y=人), stat="identity", color=NA, fill="dodgerblue") + xlab("年齢") + ylab("人")
   #2020年　棒グラフ
   g1 <- g1 + geom_bar(data=q2, aes(x=年齢, y=人), stat="identity", color="darkred", fill="red", alpha=0.2)
   #x軸10刻み設定
@@ -135,7 +126,7 @@ for(j in 1:last){
   #セルの位置情報を持ったデータ型に変換
   mytheme <- gridExtra::ttheme_default(base_size=6, base_family="HiraKakuProN-W3")
   g2 <- gridExtra::tableGrob(df, theme = mytheme)
-  ##枠つけたり色塗りしたい場合
+  #枠つけ色塗り
   g2 <- gtable::gtable_add_grob(g2, #第一引数にデータを指定
                                 grobs = rectGrob(gp=gpar(col="black",#枠線の色
                                                          fill="cyan", #Fillは塗りつぶし
@@ -147,7 +138,7 @@ for(j in 1:last){
                                 r = ncol(g2)#右側
                                )
 
-  #描画 g1とg2の縦の比率が2:1
+  #描画 g1とg2の縦の比率が3:1になるように分割
   gridExtra::grid.arrange(g1, g2, heights=c(3,1))
 
   dev.off()
