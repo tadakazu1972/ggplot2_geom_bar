@@ -6,11 +6,11 @@ library(gridExtra) #配置情報を含むデータに変換
 library(grid)
 
 #作業ディレクトリ
-setwd("~/Desktop/生野区/")
+setwd("~/Desktop/ggplot2_geom_bar/")
 
 #住民基本台帳csv読込　市HPから取得
-data1 <- read.csv("./jyuki_ikuno_201103.csv")
-data2 <- read.csv("./jyuki_ikuno_202003.csv")
+data1 <- read.csv("./jyuki_ikuno_201103.csv") #2011
+data2 <- read.csv("./jyuki_ikuno_202003.csv") #2020
 
 #男女別が「計」のデータだけ抽出
 total1 <- data1 %>% filter(data1$男女別=="計")
@@ -35,7 +35,7 @@ df <- data.frame(matrix(0, nrow=3, ncol=12))
 colnames(df) <- c("0-9歳","10-19歳","20-29歳","30-39歳","40-49歳","50-59歳","60-69歳","70-79歳","80-89歳","90-99歳","100歳","計")
 rownames(df) <- c("2011年3月末","2020年3月末","増減数")
 
-#以下は未使用　data frameが整数と%の２つの型を混合できない？
+#以下は未使用　data frameの列で整数と%の２つの型を混合できない
 #増減割合は%表示するので整数のdata frameと別に配列を作成
 #percentage <- array(0, dim=c(1,12))
 #rownames(percentage) <- c("増減割合")
