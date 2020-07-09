@@ -9,8 +9,8 @@ library(grid)
 setwd("~/Desktop/ggplot2_geom_bar/")
 
 #住民基本台帳csv読込　市HPから取得
-data1 <- read.csv("./jyuki_ikuno_201103.csv") #2011
-data2 <- read.csv("./jyuki_ikuno_202003.csv") #2020
+data1 <- read.csv("./jyuki_yodogawa_201103.csv") #2011
+data2 <- read.csv("./jyuki_yodogawa_202003.csv") #2020
 
 #男女別が「計」のデータだけ抽出
 total1 <- data1 %>% filter(data1$男女別=="計")
@@ -43,7 +43,7 @@ rownames(df) <- c("2011年3月末","2020年3月末","増減数")
 #######################################################
 #町丁目ごとに、住基データをpngファイルに書き出し。あとでパワポに貼り付けて資料作成する
 for(j in 1:last){
-  quartz(type="png", file=sprintf("生野区住基年齢構成201103_202003_%d%s.png",j, name[j]), dpi=144, bg="white")
+  quartz(type="png", file=sprintf("淀川区住基年齢構成201103_202003_%d%s.png",j, name[j]), dpi=144, bg="white")
 
   p1 <- total1 %>% filter(total1$町丁目名==name[j])
   p2 <- total2 %>% filter(total2$町丁目名==name[j])
@@ -63,21 +63,41 @@ for(j in 1:last){
 
   #ggplot2 棒グラフ　描画
   g1 <- ggplot(NULL) #複数描くためにとりあえずNULL
+
   #タイトル
-  g1 <- g1 + ggtitle("生野区　年齢別人口(住民基本台帳)") + theme(plot.title = element_text(hjust = 0.5))
+  g1 <- g1 + ggtitle("淀川区　年齢別人口(住民基本台帳)") + theme(plot.title = element_text(hjust = 0.5))
+
   #町丁目　描画
-  g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y=90, family="HiraKakuProN-W3")
+  if (max(p2[8:108]>100)){
+    g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y=150, family="HiraKakuProN-W3")
+  } else {
+    g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y= 90, family="HiraKakuProN-W3")
+  }
+
   #凡例　描画
-  g1 <- g1 + annotate("text", label="青：2011年3月末", size=4, x=80, y=75, family="HiraKakuProN-W3")
-  g1 <- g1 + annotate("text", label="赤：2020年3月末", size=4, x=80, y=70, family="HiraKakuProN-W3")
+  if (max(p2[8:108]>100)){
+    g1 <- g1 + annotate("text", label="青：2011年3月末", size=3, x=80, y=130, family="HiraKakuProN-W3")
+    g1 <- g1 + annotate("text", label="赤：2020年3月末", size=3, x=80, y=125, family="HiraKakuProN-W3")
+  } else {
+    g1 <- g1 + annotate("text", label="青：2011年3月末", size=4, x=80, y= 75, family="HiraKakuProN-W3")
+    g1 <- g1 + annotate("text", label="赤：2020年3月末", size=4, x=80, y= 70, family="HiraKakuProN-W3")
+  }
+
   #2011年　棒グラフ
   g1 <- g1 + geom_bar(data=q1, aes(x=年齢, y=人), stat="identity", color=NA, fill="dodgerblue") + xlab("年齢") + ylab("人")
+
   #2020年　棒グラフ
   g1 <- g1 + geom_bar(data=q2, aes(x=年齢, y=人), stat="identity", color="darkred", fill="red", alpha=0.2)
+
   #x軸10刻み設定
   g1 <- g1 + coord_fixed() + scale_x_continuous(breaks=seq(0,100,10))
-  #y軸を0-100設定
-  g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,100,10))
+
+  #y軸を設定 100以上であれば200を上限
+  if (max(p2[8:108]>100)){
+    g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,200,10))
+  } else {
+    g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,100,10))
+  }
 
   #人数の表作成
   #蓄積防ぐためsum1, sum2をクリア
