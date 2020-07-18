@@ -9,8 +9,8 @@ library(grid)
 setwd("~/Desktop/ggplot2_geom_bar/")
 
 #住民基本台帳csv読込　市HPから取得
-data1 <- read.csv("./jyuki_nishi_201103.csv") #2011
-data2 <- read.csv("./jyuki_nishi_202003.csv") #2020
+data1 <- read.csv("./jyuki_fukushima_201103.csv") #2011
+data2 <- read.csv("./jyuki_fukushima_202003.csv") #2020
 
 #男女別が「計」のデータだけ抽出
 total1 <- data1 %>% filter(data1$男女別=="計")
@@ -43,7 +43,7 @@ rownames(df) <- c("2011年3月末","2020年3月末","増減数")
 #######################################################
 #町丁目ごとに、住基データをpngファイルに書き出し。あとでパワポに貼り付けて資料作成する
 for(j in 1:last){
-  quartz(type="png", file=sprintf("西区住基年齢構成201103_202003_%d%s.png",j, name[j]), dpi=144, bg="white")
+  quartz(type="png", file=sprintf("福島区住基年齢構成201103_202003_%d%s.png",j, name[j]), dpi=144, bg="white")
 
   p1 <- total1 %>% filter(total1$町丁目名==name[j])
   p2 <- total2 %>% filter(total2$町丁目名==name[j])
