@@ -8,6 +8,9 @@ library(grid)
 #作業ディレクトリ
 setwd("~/Desktop/ggplot2_geom_bar/")
 
+#区名を設定
+kuname = "福島区"
+
 #住民基本台帳csv読込　市HPから取得
 data1 <- read.csv("./jyuki_fukushima_201103.csv") #2011
 data2 <- read.csv("./jyuki_fukushima_202003.csv") #2020
@@ -43,7 +46,7 @@ rownames(df) <- c("2011年3月末","2020年3月末","増減数")
 #######################################################
 #町丁目ごとに、住基データをpngファイルに書き出し。あとでパワポに貼り付けて資料作成する
 for(j in 1:last){
-  quartz(type="png", file=sprintf("福島区住基年齢構成201103_202003_%d%s.png",j, name[j]), dpi=144, bg="white")
+  quartz(type="png", file=sprintf(paste(kuname, "住基年齢構成201103_202003_%d%s.png", sep=""),j, name[j]), dpi=144, bg="white")
 
   p1 <- total1 %>% filter(total1$町丁目名==name[j])
   p2 <- total2 %>% filter(total2$町丁目名==name[j])
@@ -65,7 +68,7 @@ for(j in 1:last){
   g1 <- ggplot(NULL) #複数描くためにとりあえずNULL
 
   #タイトル
-  g1 <- g1 + ggtitle("西区　年齢別人口(住民基本台帳)") + theme(plot.title = element_text(hjust = 0.5))
+  g1 <- g1 + ggtitle(paste(kuname, "　年齢別人口(住民基本台帳)", sep="")) + theme(plot.title = element_text(hjust = 0.5))
 
   #町丁目　描画
   if (max(p2[8:108]>200)){
