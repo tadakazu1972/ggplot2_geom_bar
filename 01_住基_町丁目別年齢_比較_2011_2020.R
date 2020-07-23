@@ -9,11 +9,11 @@ library(grid)
 setwd("~/Desktop/ggplot2_geom_bar/")
 
 #区名を設定
-kuname = "福島区"
+kuname = "都島区"
 
 #住民基本台帳csv読込　市HPから取得
-data1 <- read.csv("./jyuki_fukushima_201103.csv") #2011
-data2 <- read.csv("./jyuki_fukushima_202003.csv") #2020
+data1 <- read.csv("./jyuki_miyakojima_201103.csv") #2011
+data2 <- read.csv("./jyuki_miyakojima_202003.csv") #2020
 
 #男女別が「計」のデータだけ抽出
 total1 <- data1 %>% filter(data1$男女別=="計")
@@ -71,7 +71,9 @@ for(j in 1:last){
   g1 <- g1 + ggtitle(paste(kuname, "　年齢別人口(住民基本台帳)", sep="")) + theme(plot.title = element_text(hjust = 0.5))
 
   #町丁目　描画
-  if (max(p2[8:108]>200)){
+  if (max(p2[8:108]>300)){
+    g1 <- g1 + annotate("text", label=name[j], size=5, x=50, y=340, family="HiraKakuProN-W3")
+  } else　if (max(p2[8:108]>200)){
     g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y=190, family="HiraKakuProN-W3")
   } else if (max(p2[8:108]>100)){
     g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y=150, family="HiraKakuProN-W3")
@@ -80,7 +82,10 @@ for(j in 1:last){
   }
 
   #凡例　描画
-  if (max(p2[8:108]>200)){
+  if (max(p2[8:108]>300)){
+    g1 <- g1 + annotate("text", label="青：2011年3月末", size=2, x=80, y=320, family="HiraKakuProN-W3")
+    g1 <- g1 + annotate("text", label="赤：2020年3月末", size=2, x=80, y=310, family="HiraKakuProN-W3")
+  } else　if (max(p2[8:108]>200)){
     g1 <- g1 + annotate("text", label="青：2011年3月末", size=3, x=80, y=170, family="HiraKakuProN-W3")
     g1 <- g1 + annotate("text", label="赤：2020年3月末", size=3, x=80, y=165, family="HiraKakuProN-W3")
   } else if (max(p2[8:108]>100)){
@@ -101,11 +106,18 @@ for(j in 1:last){
     g1 <- g1 + geom_bar(data=q2, aes(x=年齢, y=人), stat="identity", color="darkred", fill="red", alpha=0.2)
   }
 
-  #x軸10刻み設定
-  g1 <- g1 + coord_fixed() + scale_x_continuous(breaks=seq(0,100,10))
+  #x軸10刻み設定 300を超える友渕町1丁目は20刻みにしないと重なる
+  if (max(p2[8:108]>200)){
+    g1 <- g1 + coord_fixed() + scale_x_continuous(breaks=seq(0,100,20))
+  } else {
+    g1 <- g1 + coord_fixed() + scale_x_continuous(breaks=seq(0,100,10))
+  }
 
-  #y軸を設定 100以上であれば200を上限
-  if (max(p2[8:108]>100)){
+
+  #y軸を設定
+  if (max(p2[8:108]>200)){
+    g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,350,10))
+  } else if (max(p2[8:108]>100)){
     g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,200,10))
   } else {
     g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,100,10))
