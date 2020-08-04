@@ -68,16 +68,23 @@ eat <- eat %>% filter(eat$区=="浪速")
   text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)
   text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.6)
 
+  #凡例
+  legend("bottomleft", legend=c("食品営業許可施設","(令和元年12月27日現在)","小学校","中学校"), pch=c(20,3,15,16), col=c("red","white","yellow","blue"), cex=0.8, bg="white")
+
   dev.off()
 }
 
+
+
+##################################################################
+# オプション
 #文字列含む行を抽出
 #eat2 <- subset(eat, grepl("九条", eat$営業所所在地))
 
 #色を固定
 #col_km <- data[[column[40]]] %>% classIntervals(., 10, style="fixed", fixedBreaks=c(250,500,750,1000,1250,1500,1750,2000,2500,2750,max(.))) %>% findColours(.,pal=brewer.pal(10,"YlGn"))
 
-#生野区
+#生野区　shapeファイル読んだときに、bboxの限界値表示される
 #lefttop:34.6545261 135.5244732
 #rightbottom:34.633056 135.563221
 #xlim=c(135.5244732,135.563221), ylim=c(34.633056,34.672125)
