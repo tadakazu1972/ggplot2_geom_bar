@@ -9,15 +9,74 @@ library(classInt)#
 #
 #作業ディレクトリ#
 setwd("~/Desktop/ggplot2_geom_bar/")
-shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27111")#
+shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27114")#
 #
 #住民基本台帳csv読込#
-data1 <- read_csv("./jyuki_naniwa_202003.csv")#
+data1 <- read_csv("./jyuki_higashiyodogawa_202003.csv")#
 #
 #男女別が「計」のデータだけ抽出#
-data2 <- data1 %>% filter(data1$男女別=="計")
-str(data2)
-colnames(data2)
+data2 <- data1 %>% filter(data1$男女別=="計")#
+#
+#shapeファイルとcsvを結合#
+data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
+#
+#カラム名取得#
+column = colnames(data)#
+kuname="東淀川区"#
+#
+########################################################
+#pngファイル版#
+{#
+  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_総数.png", sep="")), dpi=144, bg="white")#
+	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
+  col_km <- data[[column[40]]] %>% classIntervals(., 10, style="fixed", fixedBreaks=c(250,500,750,1000,1250,1500,1750,2000,2500,2750,max(.))) %>% findColours(.,pal=brewer.pal(10,"RdYlGn"))#
+  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　総数 (住民基本台帳 2020年3月末現在)", sep=""))#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.6)#
+  dev.off()#
+}
+data1 <- read_csv("./jyuki_higashiyodogawa_202003.csv")#
+#
+#男女別が「計」のデータだけ抽出#
+data2 <- data1 %>% filter(data1$男女別=="計")#
+#
+#65歳以上を足し算して列を追加#
+old <- apply(data2[,73:108], 1, sum)#
+data2 <- data2 %>% mutate("65歳以上" = old )#
+#
+#shapeファイルとcsvを結合#
+data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
+#
+#カラム名取得#
+column = colnames(data)#
+kuname="東淀川区"#
+#
+########################################################
+#pngファイル版#
+{#
+  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_65歳以上.png", sep="")), dpi=144, bg="white")#
+#
+  par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
+#
+  #色はK-meansで自動計算#
+  col_km <- data[[column[144]]] %>% classIntervals(., 10, style="kmeans") %>% findColours(.,pal=brewer.pal(10,"YlOrRd"))#
+#
+  #境界#
+  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　65歳以上 (住民基本台帳 2020年3月末現在)", sep=""))#
+#
+  #町丁目名#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
+#
+  #数値#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[144]]], cex=0.6)#
+  dev.off()#
+}
+data1 <- read_csv("./jyuki_higashiyodogawa_202003.csv")#
+#
+#男女別が「計」のデータだけ抽出#
+data2 <- data1 %>% filter(data1$男女別=="計")#
+#
+#65歳以上を足し算して列を追加#
 old <- apply(data2[,83:108], 1, sum)#
 data2 <- data2 %>% mutate("75歳以上" = old )#
 #
@@ -26,7 +85,7 @@ data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
 #
 #カラム名取得#
 column = colnames(data)#
-kuname="浪速区"#
+kuname="東淀川区"#
 #
 ########################################################
 #pngファイル版#
@@ -48,7 +107,7 @@ kuname="浪速区"#
   text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[144]]], cex=0.6)#
   dev.off()#
 }
-data1 <- read_csv("./jyuki_naniwa_202003.csv")#
+data1 <- read_csv("./jyuki_higashiyodogawa_202003.csv")#
 #
 #男女別が「計」のデータだけ抽出#
 data2 <- data1 %>% filter(data1$男女別=="計")#
@@ -58,30 +117,7 @@ data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
 #
 #カラム名取得#
 column = colnames(data)#
-kuname="浪速区"#
-#
-########################################################
-#pngファイル版#
-{#
-  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_総数.png", sep="")), dpi=144, bg="white")#
-	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
-  col_km <- data[[column[40]]] %>% classIntervals(., 10, style="fixed", fixedBreaks=c(250,500,750,1000,1250,1500,1750,2000,2500,2750,max(.))) %>% findColours(.,pal=brewer.pal(10,"RdYlGn"))#
-  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　総数 (住民基本台帳 2020年3月末現在)", sep=""))#
-  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
-  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.6)#
-  dev.off()#
-}
-data1 <- read_csv("./jyuki_naniwa_202003.csv")#
-#
-#男女別が「計」のデータだけ抽出#
-data2 <- data1 %>% filter(data1$男女別=="計")#
-#
-#shapeファイルとcsvを結合#
-data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
-#
-#カラム名取得#
-column = colnames(data)#
-kuname="浪速区"#
+kuname="東淀川区"#
 #
 #小中学校緯度経度読み込み#
 school1 <- read_csv("./小学校マスター.csv")#
@@ -99,7 +135,7 @@ school2$学校名 <- gsub("大阪市立","", school2$施設名)#
 eat <- read_csv("./飲食店喫茶店マスター.csv", locale=locale(encoding="CP932"))#
 #
 #該当区のデータのみ抽出#
-eat <- eat %>% filter(eat$区=="浪速")#
+eat <- eat %>% filter(eat$区=="東淀川")#
 #
 ########################################################
 #pngファイル版#
@@ -126,13 +162,21 @@ eat <- eat %>% filter(eat$区=="浪速")#
   text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
   text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.6)#
 #
+  #凡例#
+  legend("bottomleft", legend=c("食品営業許可施設","(令和元年12月27日現在)","小学校","中学校"), pch=c(20,3,15,16), col=c("red","white","yellow","blue"), cex=0.8, bg="white")#
+#
   dev.off()#
 }
-kuname = "浪速区"#
+ibrary(dplyr)#
+library(ggplot2)#
+library(gtable) #表を描画#
+library(gridExtra) #配置情報を含むデータに変換#
+library(grid)
+kuname = "東淀川区"#
 #
 #住民基本台帳csv読込　市HPから取得#
-data1 <- read.csv("./jyuki_naniwa_201103.csv") #2011#
-data2 <- read.csv("./jyuki_naniwa_202003.csv") #2020#
+data1 <- read.csv("./jyuki_higashiyodogawa_201103.csv") #2011#
+data2 <- read.csv("./jyuki_higashiyodogawa_202003.csv") #2020#
 #
 #男女別が「計」のデータだけ抽出#
 total1 <- data1 %>% filter(data1$男女別=="計")#
@@ -304,15 +348,372 @@ for(j in 1:last){#
 #
   dev.off()#
 }
-library(ggplot2)#
-library(gtable) #表を描画#
-library(gridExtra) #配置情報を含むデータに変換#
-library(grid)
-kuname = "浪速区"#
+last
+str(total1)
+str(data1)
+data1 <- read.csv("./jyuki_higashiyodogawa_201103.csv") #2011#
+data2 <- read.csv("./jyuki_higashiyodogawa_202003.csv") #2020#
+#
+#男女別が「計」のデータだけ抽出#
+total1 <- data1 %>% filter(data1$男女別=="計")#
+total2 <- data2 %>% filter(data2$男女別=="計")#
+#
+#NAを0に置換#
+total1[is.na(total1)] <- 0#
+total2[is.na(total2)] <- 0#
+#
+#町丁目名を取得#
+last <- length(total1$町丁目名)-1 #最後が総数のため-1にして読み込まないようにする#
+name <- total1[1:last,2]#
+#
+#######################################################
+#10歳まとめで人数集計#
+#0-9歳|10-19歳|...と10歳ごとの人数計を格納する1次元配列を0初期値で準備　100歳以上と総計を入れるから12個#
+sum1 <- array(0, dim=c(1,12))#
+sum2 <- array(0, dim=c(1,12))#
+#
+#描画するdata frameを作成#
+df <- data.frame(matrix(0, nrow=3, ncol=12))#
+colnames(df) <- c("0-9歳","10-19歳","20-29歳","30-39歳","40-49歳","50-59歳","60-69歳","70-79歳","80-89歳","90-99歳","100歳","計")#
+rownames(df) <- c("2011年3月末","2020年3月末","増減数")#
+#
+#以下は未使用　data frameの列で整数と%の２つの型を混合できない#
+#増減割合は%表示するので整数のdata frameと別に配列を作成#
+#percentage <- array(0, dim=c(1,12))#
+#rownames(percentage) <- c("増減割合")#
+#
+########################################################
+#町丁目ごとに、住基データをpngファイルに書き出し。あとでパワポに貼り付けて資料作成する#
+for(j in 1:last){#
+  quartz(type="png", file=sprintf(paste(kuname, "住基年齢構成201103_202003_%d%s.png", sep=""),j, name[j]), dpi=144, bg="white")#
+#
+  p1 <- total1 %>% filter(total1$町丁目名==name[j])#
+  p2 <- total2 %>% filter(total2$町丁目名==name[j])#
+#
+  #ggplot2の棒グラフで描くため、x軸をベースに転置し、0歳〜100歳以上までのデータとする#
+  #その加工の過程でdata frameではなくなることに留意#
+  x <- 0:100#
+  y1 <- as.integer(t(p1)[8:108])#
+  y2 <- as.integer(t(p2)[8:108])#
+#
+  #データフレームをつくる(x軸にラベル,y軸に人数)#
+  q1 <- data.frame(年齢=x, 人=y1)#
+  q2 <- data.frame(年齢=x, 人=y2)#
+#
+  #文字化け解消#
+  theme_set(theme_bw(base_family="HiraKakuProN-W3"))#
+#
+  #ggplot2 棒グラフ　描画#
+  g1 <- ggplot(NULL) #複数描くためにとりあえずNULL#
+#
+  #タイトル#
+  g1 <- g1 + ggtitle(paste(kuname, "　年齢別人口(住民基本台帳)", sep="")) + theme(plot.title = element_text(hjust = 0.5))#
+#
+  #町丁目　描画#
+  if (max(p2[8:108]>300)){#
+    g1 <- g1 + annotate("text", label=name[j], size=5, x=50, y=340, family="HiraKakuProN-W3")#
+  } else　if (max(p2[8:108]>200)){#
+    g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y=190, family="HiraKakuProN-W3")#
+  } else if (max(p2[8:108]>100)){#
+    g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y=150, family="HiraKakuProN-W3")#
+  } else {#
+    g1 <- g1 + annotate("text", label=name[j], size=6, x=50, y= 90, family="HiraKakuProN-W3")#
+  }#
+#
+  #凡例　描画#
+  if (max(p2[8:108]>300)){#
+    g1 <- g1 + annotate("text", label="青：2011年3月末", size=2, x=80, y=320, family="HiraKakuProN-W3")#
+    g1 <- g1 + annotate("text", label="赤：2020年3月末", size=2, x=80, y=310, family="HiraKakuProN-W3")#
+  } else　if (max(p2[8:108]>200)){#
+    g1 <- g1 + annotate("text", label="青：2011年3月末", size=3, x=80, y=170, family="HiraKakuProN-W3")#
+    g1 <- g1 + annotate("text", label="赤：2020年3月末", size=3, x=80, y=165, family="HiraKakuProN-W3")#
+  } else if (max(p2[8:108]>100)){#
+    g1 <- g1 + annotate("text", label="青：2011年3月末", size=3, x=80, y=130, family="HiraKakuProN-W3")#
+    g1 <- g1 + annotate("text", label="赤：2020年3月末", size=3, x=80, y=125, family="HiraKakuProN-W3")#
+  } else {#
+    g1 <- g1 + annotate("text", label="青：2011年3月末", size=4, x=80, y= 75, family="HiraKakuProN-W3")#
+    g1 <- g1 + annotate("text", label="赤：2020年3月末", size=4, x=80, y= 70, family="HiraKakuProN-W3")#
+  }#
+#
+  #2011年　棒グラフ#
+  g1 <- g1 + geom_bar(data=q1, aes(x=年齢, y=人), stat="identity", color=NA, fill="dodgerblue") + xlab("年齢") + ylab("人")#
+#
+  #2020年　棒グラフ#
+  if (max(p2[8:108]>200)){#
+    g1 <- g1 + geom_bar(data=q2, aes(x=年齢, y=人), stat="identity", fill="red", alpha=0.4)#
+  } else {#
+    g1 <- g1 + geom_bar(data=q2, aes(x=年齢, y=人), stat="identity", color="darkred", fill="red", alpha=0.2)#
+  }#
+#
+  #x軸10刻み設定 300を超える友渕町1丁目は20刻みにしないと重なる#
+  if (max(p2[8:108]>200)){#
+    g1 <- g1 + coord_fixed() + scale_x_continuous(breaks=seq(0,100,20))#
+  } else {#
+    g1 <- g1 + coord_fixed() + scale_x_continuous(breaks=seq(0,100,10))#
+  }#
+  #y軸を設定#
+  if (max(p2[8:108]>200)){#
+    g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,350,10))#
+  } else if (max(p2[8:108]>100)){#
+    g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,200,10))#
+  } else {#
+    g1 <- g1 + coord_fixed() + scale_y_continuous(breaks=seq(0,100,10))#
+  }#
+#
+  #人数の表作成#
+  #蓄積防ぐためsum1, sum2をクリア#
+  sum1[1,1:12]<-0#
+  sum2[1,1:12]<-0#
+#
+  #10歳ごと集計#
+  for(i in 1:10){#
+    #2011年集計#
+    sum1[1,1] <- sum1[1,1] + total1[j, 7+i] # 0- 9歳　計#
+    sum1[1,2] <- sum1[1,2] + total1[j,17+i] #10-19歳　計#
+    sum1[1,3] <- sum1[1,3] + total1[j,27+i] #20-29歳　計#
+    sum1[1,4] <- sum1[1,4] + total1[j,37+i] #30-39歳　計#
+    sum1[1,5] <- sum1[1,5] + total1[j,47+i] #40-49歳　計#
+    sum1[1,6] <- sum1[1,6] + total1[j,57+i] #50-59歳　計#
+    sum1[1,7] <- sum1[1,7] + total1[j,67+i] #60-69歳　計#
+    sum1[1,8] <- sum1[1,8] + total1[j,77+i] #70-79歳　計#
+    sum1[1,9] <- sum1[1,9] + total1[j,87+i] #80-89歳　計#
+    sum1[1,10] <- sum1[1,10] + total1[j,97+i] #90-99歳　計#
+    sum1[1,11] <- total1[j,108] #100歳以上#
+    sum1[1,12] <- total1[j,6] #総数#
+#
+    #2020年集計#
+    sum2[1,1] <- sum2[1,1] + total2[j, 7+i] # 0- 9歳　計#
+    sum2[1,2] <- sum2[1,2] + total2[j,17+i] #10-19歳　計#
+    sum2[1,3] <- sum2[1,3] + total2[j,27+i] #20-29歳　計#
+    sum2[1,4] <- sum2[1,4] + total2[j,37+i] #30-39歳　計#
+    sum2[1,5] <- sum2[1,5] + total2[j,47+i] #40-49歳　計#
+    sum2[1,6] <- sum2[1,6] + total2[j,57+i] #50-59歳　計#
+    sum2[1,7] <- sum2[1,7] + total2[j,67+i] #60-69歳　計#
+    sum2[1,8] <- sum2[1,8] + total2[j,77+i] #70-79歳　計#
+    sum2[1,9] <- sum2[1,9] + total2[j,87+i] #80-89歳　計#
+    sum2[1,10] <- sum2[1,10] + total2[j,97+i] #90-99歳　計#
+    sum2[1,11] <- total2[j,108] #100歳以上#
+    sum2[1,12] <- total2[j,6] #総数#
+  }#
+#
+  #表(df)に格納#
+  df[1,] <- sum1#
+  df[2,] <- sum2#
+  df[3,] <- sum2 - sum1#
+#
+  #増減割合計算#
+  percentage <- (sum2 - sum1) / sum1 * 100#
+#
+  #セルの位置情報を持ったデータ型に変換#
+  mytheme <- gridExtra::ttheme_default(base_size=6, base_family="HiraKakuProN-W3")#
+  g2 <- gridExtra::tableGrob(df, theme = mytheme)#
+  #枠つけ色塗り#
+  g2 <- gtable::gtable_add_grob(g2, #第一引数にデータを指定#
+                                grobs = rectGrob(gp=gpar(col="black",#枠線の色#
+                                                         fill="cyan", #Fillは塗りつぶし#
+                                                         lwd=5, #枠線の太さ#
+                                                         alpha=0.2)), #透過性#
+                                t = 4,  #Topの略。塗りつぶし枠の上限#
+                                b = nrow(g2), #bottomの略。枠の下限、行数をnrowで取得し指定すれば一番下まで#
+                                l = 1, #left。左側。#
+                                r = ncol(g2)#右側#
+                               )#
+#
+  #描画 g1とg2の縦の比率が3:1になるように分割#
+  gridExtra::grid.arrange(g1, g2, heights=c(3,1))#
+#
+  dev.off()#
+}
+shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27117")#
+#
+#住民基本台帳csv読込#
+data1 <- read_csv("./jyuki_asahi_202003.csv")#
+#
+#男女別が「計」のデータだけ抽出#
+data2 <- data1 %>% filter(data1$男女別=="計")#
+#
+#shapeファイルとcsvを結合#
+data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
+#
+#カラム名取得#
+column = colnames(data)#
+kuname="旭区"#
+#
+########################################################
+#pngファイル版#
+{#
+  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_総数.png", sep="")), dpi=144, bg="white")#
+	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
+  col_km <- data[[column[40]]] %>% classIntervals(., 10, style="fixed", fixedBreaks=c(250,500,750,1000,1250,1500,1750,2000,2500,2750,max(.))) %>% findColours(.,pal=brewer.pal(10,"RdYlGn"))#
+  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　総数 (住民基本台帳 2020年3月末現在)", sep=""))#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.6)#
+  dev.off()#
+}
+data1 <- read_csv("./jyuki_asahi_202003.csv")#
+#
+#男女別が「計」のデータだけ抽出#
+data2 <- data1 %>% filter(data1$男女別=="計")#
+#
+#shapeファイルとcsvを結合#
+data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
+#
+#カラム名取得#
+column = colnames(data)#
+kuname="旭区"#
+#
+#小中学校緯度経度読み込み#
+school1 <- read_csv("./小学校マスター.csv")#
+school2 <- read_csv("./中学校マスター.csv")#
+#
+#生野区の小中学校のみ抽出#
+school1 <- school1 %>% filter(school1$地区名==kuname)#
+school2 <- school2 %>% filter(school2$地区名==kuname)#
+#
+#学校名クレンジング 施設名から"大阪市立"を削除#
+school1$学校名 <- gsub("大阪市立","", school1$施設名)#
+school2$学校名 <- gsub("大阪市立","", school2$施設名)#
+#
+#食品営業許可読み込み#
+eat <- read_csv("./飲食店喫茶店マスター.csv", locale=locale(encoding="CP932"))#
+#
+#該当区のデータのみ抽出#
+eat <- eat %>% filter(eat$区=="旭")#
+#
+########################################################
+#pngファイル版#
+{#
+  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_総数_小中学校_飲食.png", sep="")), dpi=144, bg="white")#
+	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
+#
+  #色はK-meansで自動計算#
+  col_km <- data[[column[40]]] %>% classIntervals(., 10, style="kmeans") %>% findColours(.,pal=brewer.pal(10,"YlGn"))#
+  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　総数 (住民基本台帳 2020年3月末現在)", sep=""))#
+#
+  #飲食店営業許可申請#
+  points(eat$経度, eat$緯度, pch=16, col="red", cex=0.5)#
+#
+  #小学校#
+  points(school1$X, school1$Y, ps=24, pch=15, col="yellow")#
+  text(school1$X, school1$Y-0.0007, labels=school1$学校名, cex=0.5)#
+#
+  #中学校#
+  points(school2$X, school2$Y, ps=24, pch=16, col="blue")#
+  text(school2$X, school2$Y-0.0007, labels=school2$学校名, cex=0.5)#
+#
+  #町丁目と人口はカブりを防ぐため最後に描画#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.6)#
+#
+  #凡例#
+  legend("bottomleft", legend=c("食品営業許可施設","(令和元年12月27日現在)","小学校","中学校"), pch=c(20,3,15,16), col=c("red","white","yellow","blue"), cex=0.8, bg="white")#
+#
+  dev.off()#
+}
+data2 <- data1 %>% filter(data1$男女別=="計")#
+#
+#65歳以上を足し算して列を追加#
+old <- apply(data2[,73:108], 1, sum)#
+data2 <- data2 %>% mutate("65歳以上" = old )#
+#
+#shapeファイルとcsvを結合#
+data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
+#
+#カラム名取得#
+column = colnames(data)#
+kuname="旭区"#
+#
+########################################################
+#pngファイル版#
+{#
+  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_65歳以上.png", sep="")), dpi=144, bg="white")#
+#
+  par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
+#
+  #色はK-meansで自動計算#
+  col_km <- data[[column[144]]] %>% classIntervals(., 10, style="kmeans") %>% findColours(.,pal=brewer.pal(10,"YlOrRd"))#
+#
+  #境界#
+  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　65歳以上 (住民基本台帳 2020年3月末現在)", sep=""))#
+#
+  #町丁目名#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
+#
+  #数値#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[144]]], cex=0.6)#
+  dev.off()#
+}
+old <- apply(data2[,83:108], 1, sum)#
+data2 <- data2 %>% mutate("75歳以上" = old )#
+#
+#shapeファイルとcsvを結合#
+data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
+#
+#カラム名取得#
+column = colnames(data)#
+kuname="旭区"#
+#
+########################################################
+#pngファイル版#
+{#
+  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_75歳以上.png", sep="")), dpi=144, bg="white")#
+#
+  par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
+#
+  #色はK-meansで自動計算#
+  col_km <- data[[column[144]]] %>% classIntervals(., 10, style="kmeans") %>% findColours(.,pal=brewer.pal(10,"YlOrRd"))#
+#
+  #境界#
+  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　75歳以上 (住民基本台帳 2020年3月末現在)", sep=""))#
+#
+  #町丁目名#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
+#
+  #数値#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[144]]], cex=0.6)#
+  dev.off()#
+}
+data1 <- read_csv("./jyuki_asahi_202003.csv")#
+#
+#男女別が「計」のデータだけ抽出#
+data2 <- data1 %>% filter(data1$男女別=="計")#
+#
+#75歳以上を足し算して列を追加#
+old <- apply(data2[,83:108], 1, sum)#
+data2 <- data2 %>% mutate("75歳以上" = old )#
+#
+#shapeファイルとcsvを結合#
+data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))#
+#
+#カラム名取得#
+column = colnames(data)#
+kuname="旭区"#
+#
+########################################################
+#pngファイル版#
+{#
+  quartz(type="png", file=sprintf(paste(kuname, "_住基202003_75歳以上.png", sep="")), dpi=144, bg="white")#
+#
+  par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")#
+#
+  #色はK-meansで自動計算#
+  col_km <- data[[column[144]]] %>% classIntervals(., 10, style="kmeans") %>% findColours(.,pal=brewer.pal(10,"YlOrRd"))#
+#
+  #境界#
+  plot(st_geometry(shape[7]), col=col_km, main=paste(kuname, "　人口　75歳以上 (住民基本台帳 2020年3月末現在)", sep=""))#
+#
+  #町丁目名#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)#
+#
+  #数値#
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[144]]], cex=0.6)#
+  dev.off()#
+}
+kuname = "旭区"#
 #
 #住民基本台帳csv読込　市HPから取得#
-data1 <- read.csv("./jyuki_naniwa_201103.csv") #2011#
-data2 <- read.csv("./jyuki_naniwa_202003.csv") #2020#
+data1 <- read.csv("./jyuki_asahi_201103.csv") #2011#
+data2 <- read.csv("./jyuki_asahi_202003.csv") #2020#
 #
 #男女別が「計」のデータだけ抽出#
 total1 <- data1 %>% filter(data1$男女別=="計")#

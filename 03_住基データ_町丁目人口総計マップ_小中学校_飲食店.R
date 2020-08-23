@@ -10,10 +10,10 @@ setwd("~/Desktop/ggplot2_geom_bar/")
 
 #シェープファイル読込
 #eStatから取得 .dbf .prj .shxも合わせて作業ディレクトリ下部のshapeフォルダに入れておくべし。
-shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27117")
+shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27118")
 
 #住民基本台帳csv読込
-data1 <- read_csv("./jyuki_asahi_202003.csv")
+data1 <- read_csv("./jyuki_jyoto_202003.csv")
 
 #男女別が「計」のデータだけ抽出
 data2 <- data1 %>% filter(data1$男女別=="計")
@@ -23,7 +23,7 @@ data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))
 
 #カラム名取得
 column = colnames(data)
-kuname="旭区"
+kuname="城東区"
 
 #小中学校緯度経度読み込み
 school1 <- read_csv("./小学校マスター.csv")
@@ -41,7 +41,7 @@ school2$学校名 <- gsub("大阪市立","", school2$施設名)
 eat <- read_csv("./飲食店喫茶店マスター.csv", locale=locale(encoding="CP932"))
 
 #該当区のデータのみ抽出
-eat <- eat %>% filter(eat$区=="旭")
+eat <- eat %>% filter(eat$区=="城東")
 
 #######################################################
 #pngファイル版
