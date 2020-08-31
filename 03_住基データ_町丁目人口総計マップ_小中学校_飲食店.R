@@ -10,10 +10,10 @@ setwd("~/Desktop/ggplot2_geom_bar/")
 
 #シェープファイル読込
 #eStatから取得 .dbf .prj .shxも合わせて作業ディレクトリ下部のshapeフォルダに入れておくべし。
-shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27118")
+shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27126")
 
 #住民基本台帳csv読込
-data1 <- read_csv("./jyuki_jyoto_202003.csv")
+data1 <- read_csv("./jyuki_hirano_202003.csv")
 
 #男女別が「計」のデータだけ抽出
 data2 <- data1 %>% filter(data1$男女別=="計")
@@ -23,7 +23,7 @@ data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))
 
 #カラム名取得
 column = colnames(data)
-kuname="城東区"
+kuname="平野区"
 
 #小中学校緯度経度読み込み
 school1 <- read_csv("./小学校マスター.csv")
@@ -41,7 +41,7 @@ school2$学校名 <- gsub("大阪市立","", school2$施設名)
 eat <- read_csv("./飲食店喫茶店マスター.csv", locale=locale(encoding="CP932"))
 
 #該当区のデータのみ抽出
-eat <- eat %>% filter(eat$区=="城東")
+eat <- eat %>% filter(eat$区=="平野")
 
 #######################################################
 #pngファイル版
@@ -65,8 +65,8 @@ eat <- eat %>% filter(eat$区=="城東")
   text(school2$X, school2$Y-0.0007, labels=school2$学校名, cex=0.5)
 
   #町丁目と人口はカブりを防ぐため最後に描画
-  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.5)
-  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.6)
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]+0.0005, labels=shape$MOJI, cex=0.4)
+  text(st_coordinates(shape %>% st_centroid)[,1], st_coordinates(shape %>% st_centroid)[,2]-0.0003, labels=data[[column[40]]], cex=0.5)
 
   #凡例
   legend("bottomleft", legend=c("食品営業許可施設","(令和元年12月27日現在)","小学校","中学校"), pch=c(20,3,15,16), col=c("red","white","yellow","blue"), cex=0.8, bg="white")
