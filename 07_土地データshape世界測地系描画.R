@@ -15,14 +15,17 @@ shape <- st_read(dsn = "~/Desktop/平野区_土地/", layer = "tochiriyo_平野区")
 ##############################################
 #町名で勝山のみ抜き出し　部分一致なのでgreplを使う
 #町レベル1
-townname = "長吉"
+townname = "長原"
 shape2 <- shape %>% filter(grepl(townname, shape$町名))
+
+#土地用途コードごとに色設定
+colors = c("gold","darkorange3","yellow","coral","coral2","aquamarine","aquamarine1","aquamarine4","aquamarine2","orange","maroon1","maroon2","lightskyblue","lightskyblue","lightskyblue","lightskyblue","lightskyblue","lightskyblue","lightskyblue","lightskyblue","lightskyblue","slateblue1","slateblue1","slateblue1","slateblue1","slateblue1","slateblue1","peachpuff","peachpuff","peachpuff","peachpuff","dodgerblue","deeppink","deeppink1","plum","pink","pink","pink","pink","dodgerblue","lightseagreen","lightseagreen","pink","slategray2","slategray2","slategray2","slategray2","slategray2","slategray2","slategray2","slategray2","slategray2","palegreen","orangered","turquoise1","turquoise3","springgreen3","wheat1","magenta","white","gray","green","tan1","blue","darkgray","red","gray40","cyan","gray70","magenta")
 
 #pngファイル書き出し
 {
   quartz(type="png", file=sprintf(paste(townname, ".png", sep="")), dpi=144, bg="white")
 	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")
-  plot(shape2[11], main=paste(townname, " (平成29年度　土地利用現況データ)", sep=""))
+  plot(shape2[11], col=colors, main=paste(townname, " (平成29年度　土地利用現況データ)", sep=""))
 
   dev.off()
 }
@@ -30,14 +33,14 @@ shape2 <- shape %>% filter(grepl(townname, shape$町名))
 ###############################################
 #町名で勝山のみ抜き出し　部分一致なのでgreplを使う
 #町レベル2
-townname = "勝山南"
+townname = "長原東"
 shape3 <- shape %>% filter(grepl(townname, shape$町名))
 
 #pngファイル書き出し
 {
   quartz(type="png", file=sprintf(paste(townname, ".png", sep="")), dpi=144, bg="white")
 	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")
-  plot(shape3[13], main=paste(townname, " (平成29年度　建物用途別現況データ)", sep=""))
+  plot(shape3[11], col=colors, main=paste(townname, " (平成29年度　建物用途別現況データ)", sep=""))
 
   dev.off()
 }
