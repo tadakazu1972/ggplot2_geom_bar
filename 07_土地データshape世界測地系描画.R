@@ -60,6 +60,53 @@ shape4 <- shape %>% filter(grepl(townname, shape$町名))
   dev.off()
 }
 
+###############################################
+#町名で勝山のみ抜き出し　部分一致なのでgreplを使う
+#町レベル3　複数　　長吉東部
+townname = "長吉出戸７丁目|長吉出戸８丁目|長吉六反|長吉長原東|長吉川辺３丁目"
+townname_group = "長吉東部"
+shape4 <- shape %>% filter(grepl(townname, shape$町名))
+
+#pngファイル書き出し
+{
+  quartz(type="png", file=sprintf(paste(townname_group, ".png", sep="")), dpi=144, bg="white")
+	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")
+  plot(st_geometry(shape4[13]), main=paste(townname_group, " (平成29年度　建物用途別現況データ)", sep=""))
+
+  dev.off()
+}
+
+
+###############################################
+#町名で勝山のみ抜き出し　部分一致なのでgreplを使う
+#町レベル3　複数　　長吉東部 + 飲食店
+townname = "長吉出戸７丁目|長吉出戸８丁目|長吉六反|長吉長原東|長吉川辺３丁目"
+townname_group = "長吉東部"
+shape4 <- shape %>% filter(grepl(townname, shape$町名))
+# 平面から緯度経度に変換
+shape4 <- shape4 %>% st_transform(6668)
+
+#食品営業許可読み込み
+eat <- read_csv("./飲食店喫茶店マスター.csv", locale=locale(encoding="CP932"))
+#該当のデータのみ抽出
+eat2 <- eat %>% filter(grepl(townname, eat$営業所所在地))
+
+#pngファイル書き出し
+{
+  quartz(type="png", file=sprintf(paste(townname_group, ".png", sep="")), dpi=144, bg="white")
+	par(new=TRUE, mex="0.2", family="HiraKakuProN-W3", xpd=TRUE, xaxt="n")
+  plot(st_geometry(shape4[13]),  border="gray50", main=paste(townname_group, " (平成29年度　建物用途別現況データ)", sep=""))
+
+  #飲食店営業許可申請
+  points(eat2$経度, eat2$緯度, pch=16, col="red", cex=0.6)
+
+  #凡例
+  legend("bottomleft", legend=c("食品営業許可施設","(令和元年12月27日現在)"), pch=c(20,3), col=c("red","white"), cex=0.8, bg="white")
+
+  dev.off()
+}
+
+
 
 
 
