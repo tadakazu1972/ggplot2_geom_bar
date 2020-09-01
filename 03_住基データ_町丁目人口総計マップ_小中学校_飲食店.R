@@ -79,7 +79,10 @@ eat <- eat %>% filter(eat$区=="平野")
 ##################################################################
 # オプション
 #文字列含む行を抽出
-#eat2 <- subset(eat, grepl("九条", eat$営業所所在地))
+eat2 <- subset(eat, grepl("長吉", eat$営業所所在地))
+#ファイル書き出し
+write.csv(eat2, "飲食店営業許可_長吉.csv", fileEncoding="CP932", row.names=FALSE)
+
 
 #色を固定
 #col_km <- data[[column[40]]] %>% classIntervals(., 10, style="fixed", fixedBreaks=c(250,500,750,1000,1250,1500,1750,2000,2500,2750,max(.))) %>% findColours(.,pal=brewer.pal(10,"YlGn"))
