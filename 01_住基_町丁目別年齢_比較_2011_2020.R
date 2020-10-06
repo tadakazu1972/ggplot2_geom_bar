@@ -9,11 +9,11 @@ library(grid)
 setwd("~/Desktop/ggplot2_geom_bar/")
 
 #区名を設定
-kuname = "北区"
+kuname = "住之江区"
 
 #住民基本台帳csv読込　市HPから取得
-data1 <- read.csv("./jyuki_kita_201103.csv") #2011
-data2 <- read.csv("./jyuki_kita_202003.csv") #2020
+data1 <- read.csv("./csv/jyuki_suminoe_201103.csv") #2011
+data2 <- read.csv("./csv/jyuki_suminoe_202003.csv") #2020
 
 #男女別が「計」のデータだけ抽出
 total1 <- data1 %>% filter(data1$男女別=="計")

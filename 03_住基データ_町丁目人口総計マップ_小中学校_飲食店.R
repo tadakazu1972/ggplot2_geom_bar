@@ -10,10 +10,10 @@ setwd("~/Desktop/ggplot2_geom_bar/")
 
 #シェープファイル読込
 #eStatから取得 .dbf .prj .shxも合わせて作業ディレクトリ下部のshapeフォルダに入れておくべし。
-shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27127")
+shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27125")
 
 #住民基本台帳csv読込
-data1 <- read_csv("./jyuki_kita_202003.csv")
+data1 <- read_csv("./csv/jyuki_suminoe_202003.csv")
 
 #男女別が「計」のデータだけ抽出
 data2 <- data1 %>% filter(data1$男女別=="計")
@@ -23,11 +23,11 @@ data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))
 
 #カラム名取得
 column = colnames(data)
-kuname="北区"
+kuname="住之江区"
 
 #小中学校緯度経度読み込み
-school1 <- read_csv("./小学校マスター.csv")
-school2 <- read_csv("./中学校マスター.csv")
+school1 <- read_csv("./csv/小学校マスター.csv")
+school2 <- read_csv("./csv/中学校マスター.csv")
 
 #生野区の小中学校のみ抽出
 school1 <- school1 %>% filter(school1$地区名==kuname)
@@ -38,10 +38,10 @@ school1$学校名 <- gsub("大阪市立","", school1$施設名)
 school2$学校名 <- gsub("大阪市立","", school2$施設名)
 
 #食品営業許可読み込み
-eat <- read_csv("./飲食店喫茶店マスター.csv", locale=locale(encoding="CP932"))
+eat <- read_csv("./csv/飲食店喫茶店マスター.csv", locale=locale(encoding="CP932"))
 
 #該当区のデータのみ抽出
-eat <- eat %>% filter(eat$区=="北")
+eat <- eat %>% filter(eat$区=="住之江")
 
 #######################################################
 #pngファイル版

@@ -10,10 +10,10 @@ setwd("~/Desktop/ggplot2_geom_bar/")
 
 #シェープファイル読込
 #eStatから取得 .dbf .prj .shxも合わせて作業ディレクトリ下部のshapeフォルダに入れておくべし。
-shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27126")
+shape <- st_read(dsn = "~/Desktop/ggplot2_geom_bar/shape/", layer = "h27ka27125")
 
 #住民基本台帳csv読込
-data1 <- read_csv("./jyuki_hirano_202003.csv")
+data1 <- read_csv("./csv/jyuki_suminoe_202003.csv")
 
 #男女別が「計」のデータだけ抽出
 data2 <- data1 %>% filter(data1$男女別=="計")
@@ -27,7 +27,7 @@ data <- left_join(shape, data2, by=c("MOJI"="町丁目名"))
 
 #カラム名取得
 column = colnames(data)
-kuname="平野区"
+kuname="住之江区"
 
 #######################################################
 #pngファイル版
